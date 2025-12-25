@@ -1,6 +1,6 @@
-# SpawnX ACS Frontend
+# Frontend
 
-React приложение для системы управления SpawnX ACS.
+React приложение для системы управления 
 
 ## Структура приложения
 
