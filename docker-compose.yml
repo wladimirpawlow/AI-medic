@@ -1,0 +1,98 @@
+
+services:
+
+  frontend:
+    build: ./FE
+    container_name: frontend
+    restart: always
+    networks:
+      - backend
+      
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+#      - ./nginx/web.conf:/etc/nginx/conf.d/web.conf
+      - ./nginx:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+#      - users
+#      - devices
+      - frontend
+    networks:
+      - backend
+
+
+
+#  users:
+#    container_name: users
+#    build: ./users
+#    env_file:
+#      - ./users/.env
+#    environment:
+#      - PYTHONPATH=/app
+#    command: gunicorn -w 4 -b 0.0.0.0:8000 users:app
+#    volumes:
+#      - ./users/:/app
+#    depends_on:
+#      - users-db
+#      - rabbitmq
+#    networks:
+#      - backend
+     
+#  processes:
+#    container_name: processes
+#    build: ./processes
+#    env_file:
+#      - ./processes/.env
+#    environment:
+#      - PYTHONPATH=/app
+#    command: gunicorn -w 4 -b 0.0.0.0:8000 processes:app
+#    volumes:
+#      - ./processes/:/app
+#    depends_on:
+#      - processes-db
+#      - rabbitmq
+#    networks:
+#      - backend
+
+
+
+#  users-db:
+#    container_name: users-db
+#    image: postgres:15
+#    restart: always
+#    env_file:
+#      - ./users/.env
+#    ports:
+#      - "5435:5432"
+#    volumes:
+#      - users_data:/var/lib/postgresql/data
+#    networks:
+#      - backend
+      
+#  processes-db:
+#    container_name: processes-db
+#    image: postgres:15
+#    restart: always
+#    env_file:
+#      - ./processes/.env
+#    ports:
+#      - "5436:5432"
+#    volumes:
+#      - processes_data:/var/lib/postgresql/data
+#    networks:
+#      - backend      
+ 
+
+#volumes:
+#  users_data:
+#  devices_data:
+
+
+networks:
+  backend:
