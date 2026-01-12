@@ -33,7 +33,7 @@ services:
       - ./processing/.env
     environment:
       - PYTHONPATH=/app
-    command: gunicorn -w 4 -b 0.0.0.0:8000 processing:app
+    command: gunicorn -w 1 -b 0.0.0.0:8000 processing:app
     volumes:
       - ./processing/:/app
     depends_on:
