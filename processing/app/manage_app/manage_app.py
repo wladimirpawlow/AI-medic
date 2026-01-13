@@ -25,7 +25,7 @@ def create_app(tests=False):
         "API_TITLE": "AI-med processing API",
         "API_VERSION": "1.0",
         "OPENAPI_VERSION": "3.0.2",
-        "OPENAPI_URL_PREFIX": "/processing",
+        "OPENAPI_URL_PREFIX": "/api/processing",
 
         "API_SPEC_OPTIONS": {
             "components": {

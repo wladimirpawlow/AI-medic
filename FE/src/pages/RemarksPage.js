@@ -26,7 +26,7 @@ const RemarksPage = () => {
         setError(null);
   
         const response = await fetch(
-          '/api/v1/processing/setpoints/features/amount?amount=100',
+          '/api/processing/setpoints/features/amount?amount=100',
           {
             method: 'GET',
             headers: {

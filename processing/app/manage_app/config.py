@@ -43,14 +43,14 @@ class Config:
         LOG_BACKUP_COUNT = 5
 
     OPEN_ROUTS = {
-                   '/processing/swagger/ui', '/docs', '/processes/swagger.json','/favicon.ico',
-                   '/processing/swaggerui/droid-sans.css',
-                   '/processing/swaggerui/swagger-ui.css',
-                   '/processing/swaggerui/swagger-ui-bundle.js',
-                   '/processing/swaggerui/swagger-ui-standalone-preset.js',
-                   '/processing/swaggerui/favicon-32x32.png',
-                   '/processing/swaggerui/favicon-16x16.png',
-                   '/processing/openapi.json',
+                   '/api/processing/swagger/ui', '/docs', '/api/processes/swagger.json','/favicon.ico',
+                   '/api/processing/swaggerui/droid-sans.css',
+                   '/api/processing/swaggerui/swagger-ui.css',
+                   '/api/processing/swaggerui/swagger-ui-bundle.js',
+                   '/api/processing/swaggerui/swagger-ui-standalone-preset.js',
+                   '/api/processing/swaggerui/favicon-32x32.png',
+                   '/api/processing/swaggerui/favicon-16x16.png',
+                   '/api/processing/openapi.json',
                    '/swagger/ui', '/docs', '/swagger.json',
                    '/swaggerui/droid-sans.css',
                    '/swaggerui/swagger-ui.css',
