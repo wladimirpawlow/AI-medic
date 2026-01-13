@@ -1,46 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './Page.css';
 import './RemarksPage.css';
 
 const RemarksPage = () => {
-  // Тестовые данные
-  const [data, setData] = useState([
-    {
-      id: 1,
-      group: 'Группа А',
-      name: 'Наименование 1',
-      code: 'CODE-001',
-      description: 'Описание первого замечания с подробной информацией о проблеме'
-    },
-    {
-      id: 2,
-      group: 'Группа Б',
-      name: 'Наименование 2',
-      code: 'CODE-002',
-      description: 'Описание второго замечания с детальным описанием обнаруженных недостатков'
-    },
-    {
-      id: 3,
-      group: 'Группа А',
-      name: 'Наименование 3',
-      code: 'CODE-003',
-      description: 'Описание третьего замечания'
-    },
-    {
-      id: 4,
-      group: 'Группа В',
-      name: 'Наименование 4',
-      code: 'CODE-004',
-      description: 'Описание четвертого замечания с полной информацией о выявленных проблемах и рекомендациях'
-    },
-    {
-      id: 5,
-      group: 'Группа Б',
-      name: 'Наименование 5',
-      code: 'CODE-005',
-      description: 'Описание пятого замечания'
-    }
-  ]);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Состояние для сортировки
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -52,6 +17,51 @@ const RemarksPage = () => {
     code: '',
     description: ''
   });
+
+  // Загрузка данных при монтировании компонента
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+  
+        const response = await fetch(
+          '/api/v1/processing/setpoints/features/amount?amount=100',
+          {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const apiData = await response.json();
+  
+        const transformedData = apiData
+          .filter(item => item.active === true)
+          .map(item => ({
+            id: item.id,
+            group: item.type ?? '',
+            name: item.name ?? '',
+            code: String(item.id ?? ''),
+            description: item.description ?? '',
+          }));
+  
+        setData(transformedData);
+      } catch (err) {
+        console.error('Ошибка при загрузке данных:', err);
+        setError('Не удалось загрузить данные. Попробуйте обновить страницу.');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, []);
 
   // Обработка сортировки
   const handleSort = (key) => {
@@ -123,6 +133,8 @@ const RemarksPage = () => {
   return (
     <div className="page">
       <h1>Замечания</h1>
+      {loading && <div style={{ textAlign: 'center', padding: '20px' }}>Загрузка данных...</div>}
+      {error && <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{error}</div>}
       <div className="remarks-table-container">
         <table className="remarks-table">
           <thead>
@@ -211,7 +223,7 @@ const RemarksPage = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedData.length === 0 ? (
+            {!loading && filteredAndSortedData.length === 0 ? (
               <tr>
                 <td colSpan="5" className="no-data">Нет данных для отображения</td>
               </tr>

@@ -1,6 +1,7 @@
 {
   "name": "aimed-frontend",
   "version": "1.0.0",
+  "proxy": "http://localhost:8000",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

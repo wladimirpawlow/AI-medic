@@ -13,7 +13,7 @@ from app.api.shemas import AmountQuerySchema, CommentQuerySchema
 
 blp = Blueprint(name="setpoints/features",
                 import_name="features",
-                url_prefix="/processing/setpoints/features",
+                url_prefix="/api/v1/processing/setpoints/features",
                 description="Feature operations")
 
 
