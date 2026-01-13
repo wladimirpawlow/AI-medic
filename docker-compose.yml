@@ -1,31 +1,12 @@
-
 services:
-
   frontend:
     build: ./FE
     container_name: frontend
     restart: always
     networks:
       - backend
-      
+    command: sh -c "npm install && npm run build"
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-#      - ./nginx/web.conf:/etc/nginx/conf.d/web.conf
-      - ./nginx:/etc/nginx/conf.d
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    depends_on:
-      - processing
-      - frontend
-    networks:
-      - backend
-
-     
   processing:
     container_name: processing
     build: ./processing
@@ -41,7 +22,6 @@ services:
     networks:
       - backend
 
-      
   processing-db:
     container_name: processing-db
     image: postgres:15
@@ -53,12 +33,25 @@ services:
     volumes:
       - processing_data:/var/lib/postgresql/data
     networks:
-      - backend      
-      
+      - backend
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/web.conf:/etc/nginx/conf.d/default.conf
+      - ./FE/build:/usr/share/nginx/html
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - processing
+    networks:
+      - backend
 
 volumes:
   processing_data:
-
 
 networks:
   backend:
