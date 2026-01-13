@@ -13,7 +13,7 @@ from app.api.setpoints.feature.routes import blp as feature_blueprint
 def create_app(tests=False):
     app = Flask(__name__, template_folder="templates")
 
-    @app.route("/processing/swagger/ui")
+    @app.route("/api/processing/swagger/ui")
     def custom_swagger_ui():
         try:
             return render_template("swagger-ui.html")
