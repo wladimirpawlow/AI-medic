@@ -3,10 +3,10 @@ from marshmallow import Schema, fields
 
 class FeatureSchema(Schema):
     name = fields.String(required=True)
-    description = fields.String(required=False)
-    type = fields.String(required=False)
-    priority = fields.String(required=False)
-    default_threshold = fields.Float(required=False)
+    description = fields.String(required=False, allow_none=True)
+    type = fields.String(required=False, allow_none=True)
+    priority = fields.String(required=False, allow_none=True)
+    default_threshold = fields.Float(required=False, allow_none=True)
     active = fields.Boolean(required=True)
 
 

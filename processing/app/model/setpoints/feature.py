@@ -81,11 +81,11 @@ def add_feature(name,
     comment_getter=get_comment)
 def modify_feature(item_id,
                    name,
-                   description,
-                   type,
-                   priority,
-                   default_threshold,
-                   active,
+                   description=None,
+                   type=None,
+                   priority=None,
+                   default_threshold=None,
+                   active=True,
                    changed_by='system',
                    comment=None
                    ):

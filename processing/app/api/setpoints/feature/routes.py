@@ -18,7 +18,7 @@ blp = Blueprint(name="setpoints/features",
 
 
 @blp.route("")
-class StageResource(MethodView):
+class FeatureResource(MethodView):
     @blp.arguments(CommentQuerySchema, location="query")
     @blp.arguments(FeatureSchema)
     def post(self, query_args, data):
@@ -42,7 +42,7 @@ class StageResource(MethodView):
 
 
 @blp.route("/amount")
-class StageAmountResource(MethodView):
+class FeatureAmountResource(MethodView):
     @blp.arguments(AmountQuerySchema, location="query")
     @blp.response(200, FeatureResponseSchema(many=True))
     def get(self, args):
@@ -56,7 +56,7 @@ class StageAmountResource(MethodView):
 
 
 @blp.route("/<uuid:feature_id>")
-class StageByIDResource(MethodView):
+class FeatureByIDResource(MethodView):
     @blp.response(200, FeatureResponseSchema)
     def get(self, feature_id):
         """Return feature by ID"""
@@ -68,8 +68,16 @@ class StageByIDResource(MethodView):
             abort(500, message=str(e))
 
 
+# @blp.route("")
+# class FeatureResource(MethodView):
+#     @blp.arguments(CommentQuerySchema, location="query")
+#     @blp.arguments(FeatureSchema)
+#     def post(self, query_args, data):
+#         """Create new feature"""
+
+
 @blp.route("/<uuid:feature_id>/settings")
-class StageModifyResource(MethodView):
+class FeatureModifyResource(MethodView):
     @blp.response(200, FeatureResponseSchema)
     @blp.arguments(FeatureSchema)
     @blp.arguments(CommentQuerySchema, location="query")
@@ -79,7 +87,7 @@ class StageModifyResource(MethodView):
             # user_login = request.jwt_payload["sub"]
             modify_feature(
                 item_id=feature_id,
-                name=data["name"],
+                name=data.get("name"),
                 description=data.get("description"),
                 type=data.get("type"),
                 priority=data.get("priority"),
