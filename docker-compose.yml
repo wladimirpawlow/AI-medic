@@ -2,7 +2,7 @@
 services:
 
   frontend:
-    build: ./FE
+    build: ./front
     container_name: frontend
     restart: always
     networks:
