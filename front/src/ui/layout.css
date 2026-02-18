@@ -343,6 +343,25 @@
   border-color: #b3ccff;
 }
 
+.notes-table {
+  table-layout: fixed;
+}
+
+.data-table th.notes-desc-th,
+.data-table td.notes-desc-cell {
+  max-width: 280px;
+  width: 280px;
+  white-space: normal;
+  box-sizing: border-box;
+}
+
+.data-table td.notes-desc-cell {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  overflow: hidden;
+}
+
 .sort-indicator {
   margin-left: 4px;
   font-size: 11px;

@@ -88,7 +88,7 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
   return (
     <div className="table-wrapper">
       <div className="table-scroll">
-        <table className="data-table">
+        <table className="data-table notes-table">
           <thead>
             <tr>
               <th>
@@ -101,7 +101,7 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
                   наименование <SortIcon columnKey="name" />
                 </div>
               </th>
-              <th>
+              <th className="notes-desc-th">
                 <div className="data-table-th-sort" onClick={() => handleSort('description')}>
                   описание <SortIcon columnKey="description" />
                 </div>
@@ -132,7 +132,7 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
                   maxLength={50}
                 />
               </th>
-              <th>
+              <th className="notes-desc-th">
                 <input
                   className="data-table-filter-input"
                   placeholder="Поиск"
@@ -171,7 +171,7 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
                 <tr key={item.id} className="data-table-row">
                   <td>{item.group}</td>
                   <td>{item.name}</td>
-                  <td>{item.description}</td>
+                  <td className="notes-desc-cell">{item.description}</td>
                   <td>{item.code}</td>
                   <td className="notes-actions-cell">
                     <button
