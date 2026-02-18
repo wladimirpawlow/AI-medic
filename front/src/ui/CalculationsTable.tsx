@@ -3,8 +3,10 @@ import Pagination from './Pagination'
 
 export type Calculation = {
   runId: string
-  setName: string
-  setVersion: number
+  /** Наименование набора или ID осмотра */
+  setOrInspection: string
+  /** Версия набора (только для запусков по набору; для запусков по осмотру — пусто) */
+  setVersion?: number
   algorithm: string
   calculatedAt: string
   fileName: string
@@ -13,7 +15,7 @@ export type Calculation = {
 
 type Filters = {
   runId: string
-  setName: string
+  setOrInspection: string
   setVersion: string
   algorithm: string
   calculatedAtFrom: string
@@ -26,7 +28,7 @@ type CalculationsTableProps = {
 
 const defaultFilters: Filters = {
   runId: '',
-  setName: '',
+  setOrInspection: '',
   setVersion: '',
   algorithm: '',
   calculatedAtFrom: '',
@@ -48,9 +50,16 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
     return data.filter((item) => {
       if (filters.runId && !item.runId.toLowerCase().includes(filters.runId.toLowerCase()))
         return false
-      if (filters.setName && !item.setName.toLowerCase().includes(filters.setName.toLowerCase()))
+      if (
+        filters.setOrInspection &&
+        !item.setOrInspection.toLowerCase().includes(filters.setOrInspection.toLowerCase())
+      )
         return false
-      if (filters.setVersion !== '' && String(item.setVersion) !== filters.setVersion) return false
+      if (
+        filters.setVersion !== '' &&
+        String(item.setVersion ?? '') !== filters.setVersion
+      )
+        return false
       if (
         filters.algorithm &&
         !item.algorithm.toLowerCase().includes(filters.algorithm.toLowerCase())
@@ -110,7 +119,7 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
           <thead>
             <tr>
               <th>запуск</th>
-              <th>набор</th>
+              <th>набор/осмотр</th>
               <th>версия</th>
               <th>алгоритм</th>
               <th>дата расчета</th>
@@ -128,8 +137,8 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
               <th>
                 <input
                   className="data-table-filter-input"
-                  value={filters.setName}
-                  onChange={(e) => handleFilterChange('setName', e.target.value)}
+                  value={filters.setOrInspection}
+                  onChange={(e) => handleFilterChange('setOrInspection', e.target.value)}
                   placeholder="Поиск"
                 />
               </th>
@@ -157,8 +166,8 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
             {paged.map((item, index) => (
               <tr key={`${item.runId}-${item.calculatedAt}-${index}`} className="data-table-row">
                 <td>{item.runId}</td>
-                <td>{item.setName}</td>
-                <td>{item.setVersion}</td>
+                <td>{item.setOrInspection}</td>
+                <td>{item.setVersion != null ? item.setVersion : '—'}</td>
                 <td>{item.algorithm}</td>
                 <td>{new Date(item.calculatedAt).toLocaleString()}</td>
                 <td>

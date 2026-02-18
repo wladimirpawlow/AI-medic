@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Pagination from './Pagination'
 import Modal from './Modal'
 
@@ -50,13 +49,14 @@ const defaultFilters: Filters = {
 }
 
 const RunsTable = ({ data }: RunsTableProps) => {
-  const navigate = useNavigate()
   const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [startSort, setStartSort] = useState<SortDirection>(null)
   const [endSort, setEndSort] = useState<SortDirection>(null)
   const [stopConfirmRunId, setStopConfirmRunId] = useState<string | null>(null)
+  const [calcRunId, setCalcRunId] = useState<string | null>(null)
+  const [calcAlgorithm, setCalcAlgorithm] = useState('')
   const [filtersBlockCollapsed, setFiltersBlockCollapsed] = useState(false)
 
   const handleFilterChange = (field: keyof Filters, value: string) => {
@@ -151,6 +151,21 @@ const RunsTable = ({ data }: RunsTableProps) => {
   const canStop = (status: Run['status']) =>
     status === 'в очереди' || status === 'обработка'
 
+  const canCalculate = (status: Run['status']) => status === 'завершен успешно'
+
+  const handleCalculate = (runId: string) => {
+    setCalcRunId(runId)
+    setCalcAlgorithm('')
+  }
+
+  const handleConfirmCalculate = () => {
+    if (calcRunId && calcAlgorithm) {
+      // TODO: вызов API расчета
+      setCalcRunId(null)
+      setCalcAlgorithm('')
+    }
+  }
+
   return (
     <div className="table-wrapper">
       <div className="table-filters-block">
@@ -228,6 +243,7 @@ const RunsTable = ({ data }: RunsTableProps) => {
                 {endSort === 'desc' && <span className="sort-indicator">▼</span>}
               </th>
               <th>статус</th>
+              <th>рассчитать</th>
             </tr>
             <tr className="data-table-filters">
               <th>
@@ -287,25 +303,18 @@ const RunsTable = ({ data }: RunsTableProps) => {
                   <option value="остановлен">остановлен</option>
                 </select>
               </th>
+              <th />
             </tr>
           </thead>
           <tbody>
             {paged.map((item) => (
               <tr key={item.id} className="data-table-row">
-                <td>
-                  <button
-                    type="button"
-                    className="link-button"
-                    onClick={() => navigate(`/runs/${item.id}`)}
-                  >
-                    {item.id}
-                  </button>
-                </td>
+                <td>{item.id}</td>
                 <td>{item.savVersionId}</td>
                 <td>
-                  {item.setId} v{item.setVersion}
+                  {item.inspectionId ? '—' : `${item.setId} v${item.setVersion}`}
                 </td>
-                <td>{item.inspectionId ?? '—'}</td>
+                <td>{item.inspectionId ? item.inspectionId : '—'}</td>
                 <td>{item.initiator}</td>
                 <td>{new Date(item.startedAt).toLocaleString()}</td>
                 <td>{item.completedAt ? new Date(item.completedAt).toLocaleString() : '—'}</td>
@@ -333,11 +342,27 @@ const RunsTable = ({ data }: RunsTableProps) => {
                     )}
                   </span>
                 </td>
+                <td>
+                  {canCalculate(item.status) && (
+                    <button
+                      type="button"
+                      className="runs-calc-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleCalculate(item.id)
+                      }}
+                      title="Запустить расчет"
+                      aria-label="Запустить расчет"
+                    >
+                      <span className="runs-calc-icon" aria-hidden>📊</span>
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {paged.length === 0 && (
               <tr>
-                <td colSpan={8} className="data-table-empty">
+                <td colSpan={9} className="data-table-empty">
                   Нет данных для отображения
                 </td>
               </tr>
@@ -369,6 +394,44 @@ const RunsTable = ({ data }: RunsTableProps) => {
               }}
             >
               Остановить
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {calcRunId && (
+        <Modal title="Запустить расчет" onClose={() => setCalcRunId(null)}>
+          <div className="modal-form-field">
+            <label className="modal-label" htmlFor="calc-algorithm">
+              Алгоритм
+            </label>
+            <select
+              id="calc-algorithm"
+              className="modal-select"
+              value={calcAlgorithm}
+              onChange={(e) => setCalcAlgorithm(e.target.value)}
+            >
+              <option value="">Выберите алгоритм</option>
+              <option value="algorithm-v1.0">algorithm-v1.0</option>
+              <option value="algorithm-v1.1">algorithm-v1.1</option>
+              <option value="algorithm-v2.0">algorithm-v2.0</option>
+            </select>
+          </div>
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={() => setCalcRunId(null)}
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleConfirmCalculate}
+              disabled={!calcAlgorithm}
+            >
+              Рассчитать
             </button>
           </div>
         </Modal>

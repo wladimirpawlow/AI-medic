@@ -533,6 +533,31 @@
   line-height: 1;
 }
 
+.runs-calc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.runs-calc-btn:hover {
+  background: #e1ecff;
+  border-color: #b3ccff;
+}
+
+.runs-calc-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
 .sets-delete-btn {
   display: inline-flex;
   align-items: center;

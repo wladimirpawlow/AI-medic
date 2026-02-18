@@ -7,7 +7,6 @@ import CalculationsPage from './screens/CalculationsPage'
 import NotesPage from './screens/NotesPage'
 import InspectionDetailsPage from './screens/InspectionDetailsPage'
 import SetDetailsPage from './screens/SetDetailsPage'
-import RunDetailsPage from './screens/RunDetailsPage'
 
 const router = createBrowserRouter([
   {
@@ -37,10 +36,6 @@ const router = createBrowserRouter([
       {
         path: 'runs',
         element: <RunsPage />,
-      },
-      {
-        path: 'runs/:id',
-        element: <RunDetailsPage />,
       },
       {
         path: 'calculations',

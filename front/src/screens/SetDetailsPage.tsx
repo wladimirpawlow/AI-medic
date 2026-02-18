@@ -188,7 +188,7 @@ const SetDetailsPage = () => {
               className="app-button"
               onClick={() => setIsCalcModalOpen(true)}
             >
-              Запустить расчет
+              Запустить анализ в САВ
             </button>
           </div>
         </div>
@@ -235,7 +235,7 @@ const SetDetailsPage = () => {
       </div>
 
       {isCalcModalOpen && (
-        <Modal title="Запустить расчет" onClose={() => setIsCalcModalOpen(false)}>
+        <Modal title="Запустить анализ в САВ" onClose={() => setIsCalcModalOpen(false)}>
           <div className="modal-form-field">
             <label className="modal-label" htmlFor="sav-version">
               Версия САВ

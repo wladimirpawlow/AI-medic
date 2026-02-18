@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Pagination from './Pagination'
+import Modal from './Modal'
 import type { Run } from './RunsTable'
 
 type SetRunsTableProps = {
@@ -8,11 +8,12 @@ type SetRunsTableProps = {
 }
 
 const SetRunsTable = ({ data }: SetRunsTableProps) => {
-  const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [startSort, setStartSort] = useState<'asc' | 'desc' | null>(null)
   const [endSort, setEndSort] = useState<'asc' | 'desc' | null>(null)
+  const [calcRunId, setCalcRunId] = useState<string | null>(null)
+  const [calcAlgorithm, setCalcAlgorithm] = useState('')
 
   const sorted = useMemo(() => {
     let result = [...data]
@@ -62,6 +63,16 @@ const SetRunsTable = ({ data }: SetRunsTableProps) => {
     setEndSort((prev) => (prev === null ? 'asc' : prev === 'asc' ? 'desc' : null))
   }
 
+  const canCalculate = (status: Run['status']) => status === 'завершен успешно'
+
+  const handleConfirmCalculate = () => {
+    if (calcRunId && calcAlgorithm) {
+      // TODO: вызов API расчета
+      setCalcRunId(null)
+      setCalcAlgorithm('')
+    }
+  }
+
   return (
     <div className="table-wrapper">
       <div className="table-scroll">
@@ -83,23 +94,16 @@ const SetRunsTable = ({ data }: SetRunsTableProps) => {
                 {endSort === 'desc' && <span className="sort-indicator">▼</span>}
               </th>
               <th>статус</th>
+              <th>рассчитать</th>
             </tr>
           </thead>
           <tbody>
             {paged.map((item) => (
               <tr key={item.id} className="data-table-row">
-                <td>
-                  <button
-                    type="button"
-                    className="link-button"
-                    onClick={() => navigate(`/runs/${item.id}`)}
-                  >
-                    {item.id}
-                  </button>
-                </td>
+                <td>{item.id}</td>
                 <td>{item.savVersionId}</td>
                 <td>
-                  {item.setId} v{item.setVersion}
+                  {item.inspectionId ? '—' : `${item.setId} v${item.setVersion}`}
                 </td>
                 <td>{item.initiator}</td>
                 <td>{new Date(item.startedAt).toLocaleString()}</td>
@@ -112,11 +116,28 @@ const SetRunsTable = ({ data }: SetRunsTableProps) => {
                     {item.processedCount}/{item.totalCount}
                   </span>
                 </td>
+                <td>
+                  {canCalculate(item.status) && (
+                    <button
+                      type="button"
+                      className="runs-calc-btn"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setCalcRunId(item.id)
+                        setCalcAlgorithm('')
+                      }}
+                      title="Запустить расчет"
+                      aria-label="Запустить расчет"
+                    >
+                      <span className="runs-calc-icon" aria-hidden>📊</span>
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {paged.length === 0 && (
               <tr>
-                <td colSpan={7} className="data-table-empty">
+                <td colSpan={8} className="data-table-empty">
                   Нет данных для отображения
                 </td>
               </tr>
@@ -124,6 +145,45 @@ const SetRunsTable = ({ data }: SetRunsTableProps) => {
           </tbody>
         </table>
       </div>
+
+      {calcRunId && (
+        <Modal title="Запустить расчет" onClose={() => setCalcRunId(null)}>
+          <div className="modal-form-field">
+            <label className="modal-label" htmlFor="set-calc-algorithm">
+              Алгоритм
+            </label>
+            <select
+              id="set-calc-algorithm"
+              className="modal-select"
+              value={calcAlgorithm}
+              onChange={(e) => setCalcAlgorithm(e.target.value)}
+            >
+              <option value="">Выберите алгоритм</option>
+              <option value="algorithm-v1.0">algorithm-v1.0</option>
+              <option value="algorithm-v1.1">algorithm-v1.1</option>
+              <option value="algorithm-v2.0">algorithm-v2.0</option>
+            </select>
+          </div>
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={() => setCalcRunId(null)}
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleConfirmCalculate}
+              disabled={!calcAlgorithm}
+            >
+              Рассчитать
+            </button>
+          </div>
+        </Modal>
+      )}
+
       <Pagination
         page={page}
         pageSize={pageSize}
