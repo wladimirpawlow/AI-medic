@@ -167,7 +167,7 @@ const RunsTable = ({ data }: RunsTableProps) => {
   const canStop = (status: Run['status']) =>
     status === 'в очереди' || status === 'обработка'
 
-  const canCalculate = (status: Run['status']) => status === 'завершен успешно'
+  //const canCalculate = (status: Run['status']) => status === 'завершен успешно'
 
   const handleCalculate = (runId: string) => {
     setCalcRunId(runId)
