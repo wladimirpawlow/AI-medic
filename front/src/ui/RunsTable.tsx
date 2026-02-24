@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Pagination from './Pagination'
 import Modal from './Modal'
 
@@ -8,6 +9,8 @@ export type Run = {
   setId: string
   setVersion: number
   inspectionId?: string
+  /** id группового запуска (для одиночных запусков может быть undefined) */
+  groupRunId?: string
   startedAt: string
   completedAt?: string
   status: 'в очереди' | 'обработка' | 'завершен успешно' | 'остановлен'
@@ -19,8 +22,8 @@ export type Run = {
 type Filters = {
   id: string
   savVersionId: string
-  setId: string
   inspectionId: string
+  groupRunId: string
   status: '' | Run['status']
   initiator: string
   startedFrom: string
@@ -38,8 +41,8 @@ type RunsTableProps = {
 const defaultFilters: Filters = {
   id: '',
   savVersionId: '',
-  setId: '',
   inspectionId: '',
+  groupRunId: '',
   status: '',
   initiator: '',
   startedFrom: '',
@@ -49,6 +52,7 @@ const defaultFilters: Filters = {
 }
 
 const RunsTable = ({ data }: RunsTableProps) => {
+  const navigate = useNavigate()
   const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
@@ -62,6 +66,15 @@ const RunsTable = ({ data }: RunsTableProps) => {
   const handleFilterChange = (field: keyof Filters, value: string) => {
     setPage(1)
     setFilters((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleResetFilters = () => {
+    setFilters(defaultFilters)
+    setPage(1)
+  }
+
+  const handleApplyFilters = () => {
+    setFiltersBlockCollapsed(true)
   }
 
   const toggleStartSort = () => {
@@ -86,11 +99,14 @@ const RunsTable = ({ data }: RunsTableProps) => {
         !item.savVersionId.toLowerCase().includes(filters.savVersionId.toLowerCase())
       )
         return false
-      if (filters.setId && !item.setId.toLowerCase().includes(filters.setId.toLowerCase()))
-        return false
       if (
         filters.inspectionId &&
         !(item.inspectionId || '').toLowerCase().includes(filters.inspectionId.toLowerCase())
+      )
+        return false
+      if (
+        filters.groupRunId &&
+        !(item.groupRunId || '').toLowerCase().includes(filters.groupRunId.toLowerCase())
       )
         return false
       if (filters.status && item.status !== filters.status) return false
@@ -169,19 +185,110 @@ const RunsTable = ({ data }: RunsTableProps) => {
   return (
     <div className="table-wrapper">
       <div className="table-filters-block">
-        <button
-          type="button"
-          className="table-filters-block-header"
-          onClick={() => setFiltersBlockCollapsed((c) => !c)}
-          aria-expanded={!filtersBlockCollapsed}
-        >
-          <span className="table-filters-block-title">Фильтры</span>
-          <span className="table-filters-block-toggle" aria-hidden>
-            {filtersBlockCollapsed ? '▶' : '▼'}
-          </span>
-        </button>
+        <div className="table-filters-block-header">
+          <button
+            type="button"
+            className="table-filters-block-toggle-btn"
+            onClick={() => setFiltersBlockCollapsed((c) => !c)}
+            aria-expanded={!filtersBlockCollapsed}
+          >
+            <span className="table-filters-block-title">Фильтры</span>
+            <span className="table-filters-block-toggle" aria-hidden>
+              {filtersBlockCollapsed ? '▶' : '▼'}
+            </span>
+          </button>
+          <div className="table-filters-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={handleResetFilters}
+            >
+              Сбросить фильтры
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleApplyFilters}
+            >
+              Применить
+            </button>
+          </div>
+        </div>
         {!filtersBlockCollapsed && (
           <div className="table-filters-block-body">
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">id запуска</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.id}
+                  onChange={(e) => handleFilterChange('id', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">версия САВ</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.savVersionId}
+                  onChange={(e) => handleFilterChange('savVersionId', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">id запуска набора</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.groupRunId}
+                  onChange={(e) => handleFilterChange('groupRunId', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">id осмотра</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.inspectionId}
+                  onChange={(e) => handleFilterChange('inspectionId', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">инициатор</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.initiator}
+                  onChange={(e) => handleFilterChange('initiator', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">статус</span>
+              <span className="table-filters-row-range">
+                <select
+                  className="data-table-filter-select"
+                  value={filters.status}
+                  onChange={(e) =>
+                    handleFilterChange('status', e.target.value as Filters['status'])
+                  }
+                >
+                  <option value="">Все</option>
+                  <option value="в очереди">в очереди</option>
+                  <option value="обработка">обработка</option>
+                  <option value="завершен успешно">завершен успешно</option>
+                  <option value="остановлен">остановлен</option>
+                </select>
+              </span>
+            </div>
             <div className="table-filters-row">
               <span className="table-filters-row-label">старт</span>
               <span className="table-filters-row-range">
@@ -229,8 +336,8 @@ const RunsTable = ({ data }: RunsTableProps) => {
             <tr>
               <th>id запуска</th>
               <th>версия САВ</th>
-              <th>id набора (версия)</th>
               <th>id осмотра</th>
+              <th>id запуска набора</th>
               <th>инициатор</th>
               <th onClick={toggleStartSort} className="data-table-sortable">
                 старт
@@ -243,67 +350,6 @@ const RunsTable = ({ data }: RunsTableProps) => {
                 {endSort === 'desc' && <span className="sort-indicator">▼</span>}
               </th>
               <th>статус</th>
-              <th>рассчитать</th>
-            </tr>
-            <tr className="data-table-filters">
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.id}
-                  onChange={(e) => handleFilterChange('id', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.savVersionId}
-                  onChange={(e) => handleFilterChange('savVersionId', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.setId}
-                  onChange={(e) => handleFilterChange('setId', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.inspectionId}
-                  onChange={(e) => handleFilterChange('inspectionId', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.initiator}
-                  onChange={(e) => handleFilterChange('initiator', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th />
-              <th />
-              <th>
-                <select
-                  className="data-table-filter-select"
-                  value={filters.status}
-                  onChange={(e) =>
-                    handleFilterChange('status', e.target.value as Filters['status'])
-                  }
-                >
-                  <option value="">Все</option>
-                  <option value="в очереди">в очереди</option>
-                  <option value="обработка">обработка</option>
-                  <option value="завершен успешно">завершен успешно</option>
-                  <option value="остановлен">остановлен</option>
-                </select>
-              </th>
-              <th />
             </tr>
           </thead>
           <tbody>
@@ -312,9 +358,22 @@ const RunsTable = ({ data }: RunsTableProps) => {
                 <td>{item.id}</td>
                 <td>{item.savVersionId}</td>
                 <td>
-                  {item.inspectionId ? '—' : `${item.setId} v${item.setVersion}`}
+                  {item.inspectionId ? (
+                    <button
+                      type="button"
+                      className="link-button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        navigate(`/inspections/${item.inspectionId}`)
+                      }}
+                    >
+                      {item.inspectionId}
+                    </button>
+                  ) : (
+                    '—'
+                  )}
                 </td>
-                <td>{item.inspectionId ? item.inspectionId : '—'}</td>
+                <td>{item.groupRunId ?? '—'}</td>
                 <td>{item.initiator}</td>
                 <td>{new Date(item.startedAt).toLocaleString()}</td>
                 <td>{item.completedAt ? new Date(item.completedAt).toLocaleString() : '—'}</td>
@@ -322,9 +381,14 @@ const RunsTable = ({ data }: RunsTableProps) => {
                   <span className="runs-status-cell">
                     <span
                       className={`badge ${getStatusBadgeClass(item.status)}`}
-                      title={`${item.status}, ${item.processedCount}/${item.totalCount}`}
+                      title={item.status}
                     >
-                      {item.processedCount}/{item.totalCount}
+                      {/* только инфографика статуса без N/M */}
+                      {item.status === 'завершен успешно'
+                        ? '✔'
+                        : item.status === 'остановлен'
+                          ? '■'
+                          : '●'}
                     </span>
                     {canStop(item.status) && (
                       <button
@@ -342,27 +406,11 @@ const RunsTable = ({ data }: RunsTableProps) => {
                     )}
                   </span>
                 </td>
-                <td>
-                  {canCalculate(item.status) && (
-                    <button
-                      type="button"
-                      className="runs-calc-btn"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleCalculate(item.id)
-                      }}
-                      title="Запустить расчет"
-                      aria-label="Запустить расчет"
-                    >
-                      <span className="runs-calc-icon" aria-hidden>📊</span>
-                    </button>
-                  )}
-                </td>
               </tr>
             ))}
             {paged.length === 0 && (
               <tr>
-                <td colSpan={9} className="data-table-empty">
+                <td colSpan={8} className="data-table-empty">
                   Нет данных для отображения
                 </td>
               </tr>

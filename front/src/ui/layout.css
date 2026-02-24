@@ -557,18 +557,27 @@
   justify-content: space-between;
   width: 100%;
   padding: 10px 12px;
-  border: none;
   background: #eef2f7;
   color: #102a43;
   font-size: 13px;
   font-weight: 600;
   font-family: inherit;
-  cursor: pointer;
-  text-align: left;
 }
 
 .table-filters-block-header:hover {
   background: #e1ecf4;
+}
+
+.table-filters-block-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
 }
 
 .table-filters-block-toggle {
@@ -601,6 +610,13 @@
 .table-filters-row-range {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.table-filters-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
   gap: 8px;
 }
 

@@ -3,6 +3,7 @@ import AppLayout from './ui/AppLayout'
 import InspectionsPage from './screens/InspectionsPage'
 import SetsPage from './screens/SetsPage'
 import RunsPage from './screens/RunsPage'
+import GroupRunsPage from './screens/GroupRunsPage'
 import CalculationsPage from './screens/CalculationsPage'
 import NotesPage from './screens/NotesPage'
 import InspectionDetailsPage from './screens/InspectionDetailsPage'
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: 'runs',
         element: <RunsPage />,
+      },
+      {
+        path: 'group-runs',
+        element: <GroupRunsPage />,
       },
       {
         path: 'calculations',

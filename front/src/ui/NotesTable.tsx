@@ -31,10 +31,25 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
   const [sortConfig, setSortConfig] = useState<{ key: keyof NoteItem; direction: 'asc' | 'desc' } | null>(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [filtersBlockCollapsed, setFiltersBlockCollapsed] = useState(false)
 
   const handleFilterChange = (key: string, value: string) => {
     setPage(1)
     setFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleResetFilters = () => {
+    setFilters({
+      group: '',
+      name: '',
+      code: '',
+      description: '',
+    })
+    setPage(1)
+  }
+
+  const handleApplyFilters = () => {
+    setFiltersBlockCollapsed(true)
   }
 
   const handleSort = (key: keyof NoteItem) => {
@@ -87,6 +102,105 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
 
   return (
     <div className="table-wrapper">
+      <div className="table-filters-block">
+        <div className="table-filters-block-header">
+          <button
+            type="button"
+            className="table-filters-block-toggle-btn"
+            onClick={() => setFiltersBlockCollapsed((c) => !c)}
+            aria-expanded={!filtersBlockCollapsed}
+          >
+            <span className="table-filters-block-title">Фильтры</span>
+            <span className="table-filters-block-toggle" aria-hidden>
+              {filtersBlockCollapsed ? '▶' : '▼'}
+            </span>
+          </button>
+          <div className="table-filters-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={handleResetFilters}
+            >
+              Сбросить фильтры
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleApplyFilters}
+            >
+              Применить
+            </button>
+          </div>
+        </div>
+        {!filtersBlockCollapsed && (
+          <div className="table-filters-block-body">
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">группа</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  placeholder="Поиск"
+                  value={filters.group}
+                  onChange={(e) => handleFilterChange('group', e.target.value)}
+                  maxLength={50}
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">наименование</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  placeholder="Поиск"
+                  value={filters.name}
+                  onChange={(e) => handleFilterChange('name', e.target.value)}
+                  maxLength={50}
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">описание</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  placeholder="Поиск"
+                  value={filters.description}
+                  onChange={(e) => handleFilterChange('description', e.target.value)}
+                  maxLength={255}
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">идентификатор</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  placeholder="Поиск"
+                  value={filters.code}
+                  onChange={(e) => handleFilterChange('code', e.target.value)}
+                  maxLength={50}
+                />
+              </span>
+            </div>
+            <div className="table-filters-actions">
+              <button
+                type="button"
+                className="app-button app-button-ghost"
+                onClick={handleResetFilters}
+              >
+                Сбросить фильтры
+              </button>
+              <button
+                type="button"
+                className="app-button"
+                onClick={handleApplyFilters}
+              >
+                Применить
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
       <div className="table-scroll">
         <table className="data-table notes-table">
           <thead>
@@ -112,45 +226,6 @@ const NotesTable = ({ data, loading, error, onEdit, onDelete }: NotesTableProps)
                 </div>
               </th>
               <th className="actions-header">Действия</th>
-            </tr>
-            <tr className="data-table-filters">
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  placeholder="Поиск"
-                  value={filters.group}
-                  onChange={(e) => handleFilterChange('group', e.target.value)}
-                  maxLength={50}
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  placeholder="Поиск"
-                  value={filters.name}
-                  onChange={(e) => handleFilterChange('name', e.target.value)}
-                  maxLength={50}
-                />
-              </th>
-              <th className="notes-desc-th">
-                <input
-                  className="data-table-filter-input"
-                  placeholder="Поиск"
-                  value={filters.description}
-                  onChange={(e) => handleFilterChange('description', e.target.value)}
-                  maxLength={255}
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  placeholder="Поиск"
-                  value={filters.code}
-                  onChange={(e) => handleFilterChange('code', e.target.value)}
-                  maxLength={50}
-                />
-              </th>
-              <th />
             </tr>
           </thead>
           <tbody>

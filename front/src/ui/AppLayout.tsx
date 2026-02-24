@@ -17,6 +17,9 @@ const AppLayout = () => {
             <NavLink to="/runs" className="app-nav-link">
               Запуски
             </NavLink>
+            <NavLink to="/group-runs" className="app-nav-link">
+              Запуски наборов
+            </NavLink>
             <NavLink to="/calculations" className="app-nav-link">
               Расчеты
             </NavLink>

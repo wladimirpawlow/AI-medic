@@ -46,6 +46,15 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
     setFilters((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleResetFilters = () => {
+    setFilters(defaultFilters)
+    setPage(1)
+  }
+
+  const handleApplyFilters = () => {
+    setFiltersBlockCollapsed(true)
+  }
+
   const filtered = useMemo(() => {
     return data.filter((item) => {
       if (filters.runId && !item.runId.toLowerCase().includes(filters.runId.toLowerCase()))
@@ -79,19 +88,81 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
   return (
     <div className="table-wrapper">
       <div className="table-filters-block">
-        <button
-          type="button"
-          className="table-filters-block-header"
-          onClick={() => setFiltersBlockCollapsed((c) => !c)}
-          aria-expanded={!filtersBlockCollapsed}
-        >
-          <span className="table-filters-block-title">Фильтры</span>
-          <span className="table-filters-block-toggle" aria-hidden>
-            {filtersBlockCollapsed ? '▶' : '▼'}
-          </span>
-        </button>
+        <div className="table-filters-block-header">
+          <button
+            type="button"
+            className="table-filters-block-toggle-btn"
+            onClick={() => setFiltersBlockCollapsed((c) => !c)}
+            aria-expanded={!filtersBlockCollapsed}
+          >
+            <span className="table-filters-block-title">Фильтры</span>
+            <span className="table-filters-block-toggle" aria-hidden>
+              {filtersBlockCollapsed ? '▶' : '▼'}
+            </span>
+          </button>
+          <div className="table-filters-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={handleResetFilters}
+            >
+              Сбросить фильтры
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleApplyFilters}
+            >
+              Применить
+            </button>
+          </div>
+        </div>
         {!filtersBlockCollapsed && (
           <div className="table-filters-block-body">
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">запуск</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.runId}
+                  onChange={(e) => handleFilterChange('runId', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">набор/осмотр</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.setOrInspection}
+                  onChange={(e) => handleFilterChange('setOrInspection', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">версия</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.setVersion}
+                  onChange={(e) => handleFilterChange('setVersion', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">алгоритм</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.algorithm}
+                  onChange={(e) => handleFilterChange('algorithm', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
             <div className="table-filters-row">
               <span className="table-filters-row-label">дата расчета</span>
               <span className="table-filters-row-range">
@@ -124,42 +195,6 @@ const CalculationsTable = ({ data }: CalculationsTableProps) => {
               <th>алгоритм</th>
               <th>дата расчета</th>
               <th>идентификатор</th>
-            </tr>
-            <tr className="data-table-filters">
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.runId}
-                  onChange={(e) => handleFilterChange('runId', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.setOrInspection}
-                  onChange={(e) => handleFilterChange('setOrInspection', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.setVersion}
-                  onChange={(e) => handleFilterChange('setVersion', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.algorithm}
-                  onChange={(e) => handleFilterChange('algorithm', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th />
-              <th />
             </tr>
           </thead>
           <tbody>

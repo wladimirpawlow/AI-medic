@@ -47,6 +47,15 @@ const SetsTable = ({ data, onDelete }: SetsTableProps) => {
     setFilters((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleResetFilters = () => {
+    setFilters(defaultFilters)
+    setPage(1)
+  }
+
+  const handleApplyFilters = () => {
+    setFiltersBlockCollapsed(true)
+  }
+
   const filtered = useMemo(() => {
     return data.filter((item) => {
       if (filters.id && !item.id.toLowerCase().includes(filters.id.toLowerCase())) return false
@@ -88,19 +97,81 @@ const SetsTable = ({ data, onDelete }: SetsTableProps) => {
   return (
     <div className="table-wrapper">
       <div className="table-filters-block">
-        <button
-          type="button"
-          className="table-filters-block-header"
-          onClick={() => setFiltersBlockCollapsed((c) => !c)}
-          aria-expanded={!filtersBlockCollapsed}
-        >
-          <span className="table-filters-block-title">Фильтры</span>
-          <span className="table-filters-block-toggle" aria-hidden>
-            {filtersBlockCollapsed ? '▶' : '▼'}
-          </span>
-        </button>
+        <div className="table-filters-block-header">
+          <button
+            type="button"
+            className="table-filters-block-toggle-btn"
+            onClick={() => setFiltersBlockCollapsed((c) => !c)}
+            aria-expanded={!filtersBlockCollapsed}
+          >
+            <span className="table-filters-block-title">Фильтры</span>
+            <span className="table-filters-block-toggle" aria-hidden>
+              {filtersBlockCollapsed ? '▶' : '▼'}
+            </span>
+          </button>
+          <div className="table-filters-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={handleResetFilters}
+            >
+              Сбросить фильтры
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={handleApplyFilters}
+            >
+              Применить
+            </button>
+          </div>
+        </div>
         {!filtersBlockCollapsed && (
           <div className="table-filters-block-body">
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">id</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.id}
+                  onChange={(e) => handleFilterChange('id', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">наименование</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.name}
+                  onChange={(e) => handleFilterChange('name', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">версия</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.version}
+                  onChange={(e) => handleFilterChange('version', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
+            <div className="table-filters-row">
+              <span className="table-filters-row-label">количество осмотров</span>
+              <span className="table-filters-row-range">
+                <input
+                  className="data-table-filter-input"
+                  value={filters.inspectionCount}
+                  onChange={(e) => handleFilterChange('inspectionCount', e.target.value)}
+                  placeholder="Поиск"
+                />
+              </span>
+            </div>
             <div className="table-filters-row">
               <span className="table-filters-row-label">дата изменения</span>
               <span className="table-filters-row-range">
@@ -132,42 +203,6 @@ const SetsTable = ({ data, onDelete }: SetsTableProps) => {
               <th>версия</th>
               <th>количество осмотров</th>
               <th>дата изменения</th>
-              <th />
-            </tr>
-            <tr className="data-table-filters">
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.id}
-                  onChange={(e) => handleFilterChange('id', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.name}
-                  onChange={(e) => handleFilterChange('name', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.version}
-                  onChange={(e) => handleFilterChange('version', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th>
-                <input
-                  className="data-table-filter-input"
-                  value={filters.inspectionCount}
-                  onChange={(e) => handleFilterChange('inspectionCount', e.target.value)}
-                  placeholder="Поиск"
-                />
-              </th>
-              <th />
               <th />
             </tr>
           </thead>
