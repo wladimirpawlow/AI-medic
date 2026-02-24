@@ -55,6 +55,7 @@ const GroupRunsTable = ({ data }: GroupRunsTableProps) => {
   const [calcRunId, setCalcRunId] = useState<string | null>(null)
   const [calcAlgorithm, setCalcAlgorithm] = useState('')
   const [filtersBlockCollapsed, setFiltersBlockCollapsed] = useState(false)
+  const [stopConfirmRunId, setStopConfirmRunId] = useState<string | null>(null)
 
   const handleFilterChange = (field: keyof Filters, value: string) => {
     setPage(1)
@@ -146,6 +147,9 @@ const GroupRunsTable = ({ data }: GroupRunsTableProps) => {
   }
 
   const canCalculate = (status: GroupRun['status']) => status === 'завершен успешно'
+
+  const canStop = (status: GroupRun['status']) =>
+    status === 'в очереди' || status === 'обработка'
 
   const toggleStart = () => {
     setStartSort((prev) => (prev === null ? 'asc' : prev === 'asc' ? 'desc' : null))
@@ -348,11 +352,29 @@ const GroupRunsTable = ({ data }: GroupRunsTableProps) => {
                 <td>{new Date(item.startedAt).toLocaleString()}</td>
                 <td>{item.completedAt ? new Date(item.completedAt).toLocaleString() : '—'}</td>
                 <td>
-                  <span
-                    className={`badge ${getStatusBadgeClass(item.status)}`}
-                    title={`${item.status}, ${item.processedCount}/${item.totalCount}`}
-                  >
-                    {item.processedCount}/{item.totalCount}
+                  <span className="runs-status-cell">
+                    <span
+                      className={`badge ${getStatusBadgeClass(item.status)}`}
+                      title={`${item.status}, ${item.processedCount}/${item.totalCount}`}
+                    >
+                      {item.processedCount}/{item.totalCount}
+                    </span>
+                    {canStop(item.status) && (
+                      <button
+                        type="button"
+                        className="runs-stop-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setStopConfirmRunId(item.id)
+                        }}
+                        title="Остановить запуск набора"
+                        aria-label="Остановить запуск набора"
+                      >
+                        <span className="runs-stop-icon" aria-hidden>
+                          ■
+                        </span>
+                      </button>
+                    )}
                   </span>
                 </td>
                 <td>
@@ -384,6 +406,34 @@ const GroupRunsTable = ({ data }: GroupRunsTableProps) => {
           </tbody>
         </table>
       </div>
+
+      {stopConfirmRunId && (
+        <Modal
+          title="Остановить запуск набора?"
+          onClose={() => setStopConfirmRunId(null)}
+        >
+          <p>Вы уверены, что хотите остановить групповой запуск по набору?</p>
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="app-button app-button-ghost"
+              onClick={() => setStopConfirmRunId(null)}
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              className="app-button"
+              onClick={() => {
+                // TODO: вызов API остановки группового запуска
+                setStopConfirmRunId(null)
+              }}
+            >
+              Остановить
+            </button>
+          </div>
+        </Modal>
+      )}
 
       {calcRunId && (
         <Modal title="Запустить расчет" onClose={() => setCalcRunId(null)}>
