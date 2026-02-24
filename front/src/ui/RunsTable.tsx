@@ -169,10 +169,10 @@ const RunsTable = ({ data }: RunsTableProps) => {
 
   //const canCalculate = (status: Run['status']) => status === 'завершен успешно'
 
-  const handleCalculate = (runId: string) => {
-    setCalcRunId(runId)
-    setCalcAlgorithm('')
-  }
+ // const handleCalculate = (runId: string) => {
+  //  setCalcRunId(runId)
+  //  setCalcAlgorithm('')
+ // }
 
   const handleConfirmCalculate = () => {
     if (calcRunId && calcAlgorithm) {
